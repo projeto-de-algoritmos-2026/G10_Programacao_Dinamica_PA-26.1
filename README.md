@@ -179,10 +179,3 @@ python -m pytest tests/ -v
 
 - **`tests/test_troco.py`** cobre o algoritmo isoladamente: valor zero, caso ótimo, respeito ao estoque, casos impossíveis, validações de entrada, e o caso clássico em que o algoritmo guloso falha.
 - **`tests/test_cli.py`** cobre a aplicação ponta a ponta: saque com sucesso, persistência do estoque entre saques sucessivos, mensagens de erro para estoque inexistente/JSON inválido/valor inválido, e o comando `estoque`.
-
-## Possíveis melhorias futuras
-
-- Suportar depósito de notas (`python cli.py depositar ...`), reabastecendo o estoque
-- Permitir múltiplas contas/caixas, cada uma com seu próprio arquivo de estoque
-- Adicionar um modo `--explicar` que mostra o raciocínio do DP passo a passo durante o saque
-- Trocar o JSON por um banco SQLite simples se o projeto crescer
