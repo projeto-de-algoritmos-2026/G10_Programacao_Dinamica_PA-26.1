@@ -1,7 +1,7 @@
 # Caixa Eletrônico — Troco com Estoque Limitado
 
-Número da Lista: 2<br>
-Conteúdo da Disciplina: Algoritmos Ambiociosos<br>
+Número da Lista: 4<br>
+Conteúdo da Disciplina: Programação Dinâmica<br>
 
 ---
 
