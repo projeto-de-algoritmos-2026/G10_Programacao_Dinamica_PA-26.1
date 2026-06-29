@@ -117,3 +117,86 @@ def test_comando_estoque_reflete_saque_anterior(arquivo_estoque, capsys):
     saida = capsys.readouterr().out
 
     assert "R$ 100: 1 nota" in saida
+
+
+# --- Menu interativo (sem subcomando) ---
+#
+# Simulamos a digitação do usuário substituindo builtins.input por uma
+# função que consome uma sequência fixa de respostas, uma por chamada.
+
+
+def test_menu_interativo_sai_imediatamente_mostra_titulo(arquivo_estoque, monkeypatch, capsys):
+    entradas = iter(["0"])
+    monkeypatch.setattr("builtins.input", lambda _: next(entradas))
+
+    codigo = main(["--estoque", str(arquivo_estoque)])
+    saida = capsys.readouterr().out
+
+    assert codigo == 0
+    assert "CAIXA ELETRÔNICO" in saida
+    assert "Até logo" in saida
+
+
+def test_menu_interativo_consultar_estoque(arquivo_estoque, monkeypatch, capsys):
+    entradas = iter(["2", "0"])
+    monkeypatch.setattr("builtins.input", lambda _: next(entradas))
+
+    codigo = main(["--estoque", str(arquivo_estoque)])
+    saida = capsys.readouterr().out
+
+    assert codigo == 0
+    assert "R$ 100: 2 nota" in saida
+
+
+def test_menu_interativo_realiza_saque_e_persiste_estoque(arquivo_estoque, monkeypatch):
+    entradas = iter(["1", "100", "0"])
+    monkeypatch.setattr("builtins.input", lambda _: next(entradas))
+
+    codigo = main(["--estoque", str(arquivo_estoque)])
+
+    assert codigo == 0
+    estoque_atualizado = json.loads(arquivo_estoque.read_text())
+    assert estoque_atualizado["100"] == 1  # tinha 2 notas de 100, sacou 1
+
+
+def test_menu_interativo_saque_invalido_nao_quebra_o_loop(arquivo_estoque, monkeypatch, capsys):
+    # digita um valor não numérico, depois sai
+    entradas = iter(["1", "abc", "0"])
+    monkeypatch.setattr("builtins.input", lambda _: next(entradas))
+
+    codigo = main(["--estoque", str(arquivo_estoque)])
+    saida = capsys.readouterr().out
+
+    assert codigo == 0
+    assert "inválido" in saida.lower()
+
+
+def test_menu_interativo_opcao_invalida_nao_quebra_o_loop(arquivo_estoque, monkeypatch, capsys):
+    entradas = iter(["9", "0"])
+    monkeypatch.setattr("builtins.input", lambda _: next(entradas))
+
+    codigo = main(["--estoque", str(arquivo_estoque)])
+    saida = capsys.readouterr().out
+
+    assert codigo == 0
+    assert "opção inválida" in saida.lower()
+
+
+def test_menu_interativo_estoque_inexistente_retorna_erro(tmp_path, capsys):
+    caminho_inexistente = tmp_path / "nao_existe.json"
+    codigo = main(["--estoque", str(caminho_inexistente)])
+    saida_erro = capsys.readouterr().err
+
+    assert codigo == 1
+    assert "não encontrado" in saida_erro.lower()
+
+
+def test_comandos_diretos_continuam_funcionando_sem_abrir_menu(arquivo_estoque, capsys):
+    # garante que passar um subcomando não aciona o menu interativo
+    # (não deveria pedir nenhum input())
+    codigo = main(["sacar", "100", "--estoque", str(arquivo_estoque)])
+    saida = capsys.readouterr().out
+
+    assert codigo == 0
+    assert "CAIXA ELETRÔNICO" not in saida
+
