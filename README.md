@@ -16,7 +16,7 @@ Conteúdo da Disciplina: Algoritmos Ambiociosos<br>
 
 Para acessar a apresentação, clique no link abaixo:
 
-[Assistir ao vídeo](https://youtu.be/L8CwQm24aZI)
+[Assistir ao vídeo](https://youtu.be/D_wObJzOMx0)
 
 --- 
 
